@@ -4,17 +4,12 @@ from __future__ import absolute_import
 import os.path
 from io import BytesIO
 
-from openpyxl.xml.constants import (PACKAGE_WORKSHEET_RELS,
-                                    REL_NS,
-                                    PACKAGE_RELS,
-                                    PACKAGE_IMAGES,
-                                    PACKAGE_DRAWINGS,
-                                    DRAWING_NS,
-                                    SHEET_DRAWING_NS)
+from openpyxl.xml.constants import (
+    PACKAGE_WORKSHEET_RELS, REL_NS, PACKAGE_RELS, PACKAGE_IMAGES,
+    PACKAGE_DRAWINGS, DRAWING_NS, SHEET_DRAWING_NS)
 from openpyxl.xml.functions import fromstring
 from openpyxl.drawing.image import Image
 from openpyxl.utils import get_column_letter
-
 
 IMAGE_NS = REL_NS + '/image'
 _DRAWING_NS = REL_NS + '/drawing'
@@ -77,14 +72,17 @@ def read_drawings(ws, drawings_path, archive, valid_files):
                 if blip is not None:
                     rid = blip.attrib.get('{%s}embed' % REL_NS)
                     if rid is not None:
-                        image_file = read_image_file(rels_root, rid, valid_files)
+                        image_file = read_image_file(
+                            rels_root,
+                            rid,
+                            valid_files,
+                        )
                         if image_file:
                             readfile = archive.read(image_file)
                             bytes = BytesIO(readfile)
                             img = Image(bytes)
-                            img.drawing.name = name
-                            img.anchor(cell, anchortype='oneCell')
-
+                            img.name = name
+                            img.anchor = cell.coordinate
                             ws.add_image(img)
 
 

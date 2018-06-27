@@ -1,3 +1,4 @@
+# coding: utf-8
 from zipfile import ZipFile
 from io import BytesIO
 
@@ -68,16 +69,20 @@ def _load_workbook(wb, archive, filename, read_only, keep_vba):
         shared_strings = []
 
     try:
-        wb.loaded_theme = archive.read(ARC_THEME)  # some writers don't output a theme, live with it (fixes #160)
+        wb.loaded_theme = archive.read(
+            ARC_THEME,
+        )  # some writers don't output a theme, live with it (fixes #160)
     except KeyError:
         assert wb.loaded_theme == None, "even though the theme information is missing there is a theme object ?"
 
-    style_table, color_index, cond_styles = read_style_table(archive.read(ARC_STYLE))
+    style_table, color_index, cond_styles = read_style_table(
+        archive.read(ARC_STYLE),)
     wb.shared_styles = style_table
-    wb.style_properties = {'dxf_list':cond_styles}
+    wb.style_properties = {'dxf_list': cond_styles}
     wb.cond_styles = cond_styles
 
-    wb.properties.excel_base_date = read_excel_base_date(xml_source=archive.read(ARC_WORKBOOK))
+    wb.properties.excel_base_date = read_excel_base_date(
+        xml_source=archive.read(ARC_WORKBOOK),)
 
     # get worksheets
     wb.worksheets = []  # remove preset worksheet
@@ -88,26 +93,44 @@ def _load_workbook(wb, archive, filename, read_only, keep_vba):
             continue
 
         if not read_only:
-            new_ws = read_worksheet(archive.read(worksheet_path), wb,
-                                    sheet_name, shared_strings, style_table,
-                                    color_index=color_index,
-                                    keep_vba=keep_vba)
+            new_ws = read_worksheet(
+                archive.read(worksheet_path),
+                wb,
+                sheet_name,
+                shared_strings,
+                style_table,
+                color_index=color_index,
+                keep_vba=keep_vba,
+            )
         else:
-            new_ws = read_worksheet(None, wb, sheet_name, shared_strings,
-                                    style_table,
-                                    color_index=color_index,
-                                    worksheet_path=worksheet_path)
+            new_ws = read_worksheet(
+                None,
+                wb,
+                sheet_name,
+                shared_strings,
+                style_table,
+                color_index=color_index,
+                worksheet_path=worksheet_path,
+            )
 
         new_ws.sheet_state = sheet.get('state') or 'visible'
         wb._add_sheet(new_ws)
 
         if not read_only:
-        # load comments into the worksheet cells
-            comments_file = get_comments_file(worksheet_path, archive, valid_files)
+            # load comments into the worksheet cells
+            comments_file = get_comments_file(
+                worksheet_path,
+                archive,
+                valid_files,
+            )
             if comments_file is not None:
                 read_comments(new_ws, archive.read(comments_file))
 
-            drawings_file = get_drawings_file(worksheet_path, archive, valid_files)
+            drawings_file = get_drawings_file(
+                worksheet_path,
+                archive,
+                valid_files,
+            )
             if drawings_file is not None:
                 read_drawings(new_ws, drawings_file, archive, valid_files)
 
