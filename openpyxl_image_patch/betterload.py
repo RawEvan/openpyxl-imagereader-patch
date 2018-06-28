@@ -24,13 +24,13 @@ def load_workbook_img(
 
     wb = load_workbook(filename, read_only, keep_vba, guess_types, data_only)
     valid_files = archive.namelist()
-    wb_sheet_names = wb.get_sheet_names()
+    wb_sheet_names = wb.sheetnames
     wb_part = _find_workbook_part(package)
     parser = WorkbookParser(archive, wb_part.PartName[1:])
     parser.parse()
     for sheet, rel in parser.find_sheets():
         sheet_name = sheet.name
-        ws = wb.get_sheet_by_name(sheet_name)
+        ws = wb[sheet_name]
         worksheet_path = rel.target
         if not worksheet_path in valid_files:
             continue
@@ -38,6 +38,6 @@ def load_workbook_img(
             continue
         drawings_file = get_drawings_file(worksheet_path, archive, valid_files)
         if drawings_file is not None:
-            ws = wb.get_sheet_by_name(sheet_name)
+            ws = wb[sheet_name]
             read_drawings(ws, drawings_file, archive, valid_files)
     return wb
