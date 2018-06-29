@@ -1,4 +1,6 @@
 # coding: utf-8
+# Copy from https://github.com/jchuahtacc/openpyxl-imagereader-patch
+# Improved to be compatible with `openpyxl` 2.5.4.
 
 from openpyxl.reader.excel import load_workbook
 from openpyxl.reader.excel import _validate_archive, _find_workbook_part
